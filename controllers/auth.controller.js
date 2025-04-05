@@ -1,5 +1,5 @@
 const User = require("../models/Users");
-const Seat = require("../models/Seats")
+const Seat = require("../models/Seats");
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();
   const options = {
@@ -7,11 +7,15 @@ const sendTokenResponse = (user, statusCode, res) => {
     secure: process.env.NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 24 * process.env.COOKIE_EXPIRE,
   };
-
-  res.status(statusCode).cookie("token", token, options).json({
-    success: true,
-    token,
-  });
+  const { name, email, role, _id } = user;
+  res
+    .status(statusCode)
+    .cookie("token", token, options)
+    .json({
+      success: true,
+      token,
+      user: { name, email, role, id: _id },
+    });
 };
 
 //Register User
