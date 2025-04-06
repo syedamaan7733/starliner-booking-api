@@ -35,6 +35,7 @@ app.use(
 // routes
 app.use("/api/v1/auth", require("./routes/auth.route"));
 app.use("/api/v1/booking", require("./routes/booking.route"));
+app.use("/api/v1/train", require("./routes/train.route"));
 
 // testing
 app.get("/", (req, res) => {

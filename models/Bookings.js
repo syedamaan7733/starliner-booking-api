@@ -1,10 +1,3 @@
-// {
-//   _id: ObjectId,
-//   userId: ObjectId,
-//   seats: [Number], // Array of seat numbers
-//   createdAt: Date
-// }
-
 const { default: mongoose } = require("mongoose");
 
 const passangerDeail = new mongoose.Schema(
@@ -27,8 +20,13 @@ const seatSchema = new mongoose.Schema(
     passangerDetail: [passangerDeail],
     ticketStatus: {
       type: String,
-      enums: ["upcomming", "departed"],
+      enums: ["upcomming", "departed", "cancelled"],
       default: "upcomming",
+    },
+    train: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Train",
+      required: true,
     },
     amount: { type: Number },
   },
@@ -38,7 +36,7 @@ const seatSchema = new mongoose.Schema(
 seatSchema.pre("save", function (next) {
   try {
     if (!this.seats.length > 0) return next();
-    this.amount = this.seats.length * 1100;
+    this.amount = this.seats.length * 1200;
     next();
   } catch (error) {
     console.log(error);

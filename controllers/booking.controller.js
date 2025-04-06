@@ -2,6 +2,7 @@ const initializeSeat = require("../utils/populateSeats");
 const Seat = require("../models/Seats");
 const Bookings = require("../models/Bookings");
 const getAllocatedSeats = require("../utils/bookingAlgo");
+const Train = require("../models/Trains");
 
 const resetBooking = async (req, res) => {
   try {
@@ -35,8 +36,17 @@ const resetBooking = async (req, res) => {
 //  Processing the booking POST protected Rpute
 const createBooking = async (req, res) => {
   try {
-    const { requestedSeats, passanger_details } = req.body;
+    const { requestedSeats, passanger_details, trainId } = req.body;
     const { _id: id } = req.user;
+
+    const train = await Train.findOne({ _id: trainId });
+
+    if (!train) {
+      return res.status(404).json({
+        success: false,
+        message: "No trains found ",
+      });
+    }
 
     // getting all allocated Seats
     const allocatedSeats = await getAllocatedSeats(requestedSeats);
@@ -44,6 +54,8 @@ const createBooking = async (req, res) => {
     const booking = new Bookings({
       userId: id,
       seats: [...allocatedSeats],
+      passangerDetail: [...passanger_details],
+      train: train._id,
     });
 
     const confirmBooking = await Seat.updateMany(
@@ -68,7 +80,9 @@ const getUserBookings = async (req, res) => {
   try {
     const { _id: id } = req.user;
 
-    const userBooking = await Bookings.find({ userId: id });
+    const userBooking = await Bookings.find({ userId: id }).populate({
+      path: "train",
+    });
 
     console.log(userBooking);
 
@@ -81,4 +95,38 @@ const getUserBookings = async (req, res) => {
     });
   }
 };
-module.exports = { resetBooking, createBooking, getUserBookings };
+
+// Getting available seats
+const getAvailableSeats = async (req, res) => {
+  try {
+    const availableSeats = await Seat.countDocuments({ status: "available" });
+    res.status(200).json({ success: true, availableSeats });
+  } catch (error) {
+    console.error(`Error in get available seats: ${error.message}`);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+// Getting All Seats.
+const getAllSeats = async (req, res) => {
+  const allSeats = await Seat.find();
+  res.status(200).json({ success: true, seats: allSeats });
+  try {
+  } catch (error) {
+    console.error(`Error in getting all the seats: ${error.message}`);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+module.exports = {
+  resetBooking,
+  createBooking,
+  getUserBookings,
+  getAvailableSeats,
+  getAllSeats,
+};

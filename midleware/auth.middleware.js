@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/Users");
 
 // auth middleware for protected route
-const authenticateUser = async (req, res, next) => {
+const authenticateUser = async (req, res, next) => {  
   //getting token either from headers or cookie
   const token = req.headers.authorization?.split(" ")[1] || req.cookies.token;
 
