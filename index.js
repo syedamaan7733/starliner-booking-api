@@ -20,6 +20,7 @@ app.use(
       "http://localhost:5174",
       "http://192.168.162.84:5173",
       "http://172.18.128.1:5173",
+      "https://starliner-booking-sys-fe-xp6y.vercel.app",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
