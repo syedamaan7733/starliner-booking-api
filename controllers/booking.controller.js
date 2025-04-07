@@ -82,7 +82,7 @@ const getUserBookings = async (req, res) => {
 
     const userBooking = await Bookings.find({ userId: id }).populate({
       path: "train",
-    });
+    }).sort({createdAt:-1});
 
     console.log(userBooking);
 
